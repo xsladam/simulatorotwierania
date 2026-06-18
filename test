@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Symulator skrzynek</title>
+  <style>
+    body { font-family: Arial; background:#111; color:#eee; text-align:center; }
+    .item { margin-top:20px; font-size:20px; }
+    .rare { color:#4fc3f7; }
+    .epic { color:#ba68c8; }
+    .legendary { color:#ffca28; }
+    button { margin-top:20px; padding:10px 20px; font-size:16px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>Symulator skrzynek</h1>
+  <p>Balans: <span id="balance">1000</span> coins</p>
+  <p>Cena skrzynki: <span id="price">100</span> coins</p>
+  <button onclick="openCase()">Otwórz skrzynkę</button>
+
+  <div class="item" id="last-item"></div>
+  <div id="log"></div>
+
+  <script>
+    // fejkowy balans
+    let balance = 1000;
+    const casePrice = 100;
+
+    // przykładowe itemy
+    const items = [
+      { name: "P2000 | Default", rarity: "common", value: 5 },
+      { name: "AK-47 | Redline", rarity: "rare", value: 80 },
+      { name: "AWP | Asiimov", rarity: "epic", value: 300 },
+      { name: "Karambit | Fade", rarity: "legendary", value: 1200 }
+    ];
+
+    // szanse (prosty przykład)
+    function getRandomItem() {
+      const r = Math.random();
+      if (r < 0.7) return items[0];        // 70% common
+      if (r < 0.9) return items[1];        // 20% rare
+      if (r < 0.98) return items[2];       // 8% epic
+      return items[3];                     // 2% legendary
+    }
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = balance;
+    }
+
+    function openCase() {
+      if (balance < casePrice) {
+        alert("Nie masz kasy, królku 😅");
+        return;
+      }
+
+      balance -= casePrice;
+      const item = getRandomItem();
+      balance += item.value; // fejk – od razu doliczamy wartość itemu
+      updateBalance();
+
+      const lastItem = document.getElementById('last-item');
+      lastItem.className = 'item ' + (item.rarity === 'rare' ? 'rare' :
+                                      item.rarity === 'epic' ? 'epic' :
+                                      item.rarity === 'legendary' ? 'legendary' : '');
+      lastItem.textContent = `Wylosowałeś: ${item.name} (${item.rarity}) | wartość: ${item.value} coins`;
+
+      const log = document.getElementById('log');
+      const p = document.createElement('p');
+      p.textContent = `+ ${item.name} (${item.value}) | balans: ${balance}`;
+      log.prepend(p);
+    }
+
+    updateBalance();
+  </script>
+</body>
+</html>
